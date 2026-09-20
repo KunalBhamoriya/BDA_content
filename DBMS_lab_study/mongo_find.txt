@@ -1,0 +1,153 @@
+$lt,$gt,$lte,$gte,$eq,$in,$nin,$size,$mod
+$and,$or,$nor, $not
+$type, $exists, pattern matching,$elemMatch
+
+
+
+----display all movies with rating=3
+db.movie.find({rating:3})
+
+---display all movies with rating=3 and price=200
+db.movie.find({rating:3,price:200})
+
+---display all movies with rating>3 and price=200
+rating:{$gt:3}
+price:200
+db.movie.find({rating:{$gt:3},price:200})
+
+---display all movies with rating>3 and price>300
+Rating:{$gt:3}
+Price:{$gt:300}
+
+db.movie.find({rating:{$gt:3},price:{$gt:300}},{name:1,price:1,ticket_no:1,_id:0})
+
+
+------display all movies with price >= 200 and <=400
+Price:{$gte:200,$lte:400}
+
+db.movie.find({price:{$gt:200,$lt:400}})
+
+---display all movies with rating >3 and <6
+
+
+Rating:{$gt:3,$lt:6}
+Db.movie.find({Rating:{$gt:3,$lt:6}})
+
+---display all movies with price = 200 or 540 400
+
+price:{$in:[200,540,400]}
+db.movie.find({price:{$in:[200,540,400]}})
+
+
+---display all movies with price not = 200 nor 540  nor 400
+
+db.movie.find({price:{$nin:[200,540,400]}})
+
+
+
+---display count of  movies with price not = 200 nor 540  nor 400
+db.movie.find({price:{$nin:[200,540,400]}}).countDocuments()
+
+------display all movies with rating=4 or price>300
+rating:4
+price:{$gt:300}
+$or:[{rating:4},{price:{$gt:300}}]
+db.movie.find({$or:[{rating:4},{price:{$gt:300}}]})
+
+---display all movies with price either 200 or 300 or rating >4
+Price:{$in:[200,300]}
+Rating:{$gt:4}
+$or:[{price:{$in:[200,300]}},{Rating:{$gt:4}}]
+db.movie.find({$or:[{price:{$in:[200,300]}},{Rating:{$gt:4}}]})
+
+------display all movies with price not > 200 and < 300
+Price:{$not:{$gt:200,$lt:300}}
+
+
+db.movie.find({price:{$not:{$gt:200,$lt:300}}})
+
+
+------display all movies with rating is odd
+Rating:{$mod:[2,1]}
+db.movie.find({rating:{$mod:[2,1]}})
+
+
+
+
+----display all movies in which amitabh has acted
+db.movie.find({actor:'Amitabh'})
+
+----display all movies in which amitabh has acted display in ascending order of price
+db.movie.find({actor:'Amitabh'}).sort({price:1})
+
+----display all movies in which amitabh has acted display in descending order of price
+db.movie.find({actor:'Amitabh'}).sort({price:-1})
+
+----display all movies in which amitabh has acted display only 1st document
+db.movie.find({actor:'Amitabh'}).limit(1)
+
+----display all movies in which amitabh has acted display only 1st  5 document
+db.movie.find({actor:'Amitabh'}).limit(5)
+
+----display all movies in which amitabh has acted display only 5 6th and 7 th
+
+db.movie.find({actor:'Amitabh'}).limit(3).skip(4)
+
+------to display all movies with amitabh acted in it and is at 1 st index position in array
+db.movie.find({'actor.1':'Amitabh'}).limit(3).skip(4)
+
+------to display all movies with number of actors=3
+db.movie.find({actor:{$size:3}})
+
+
+-----to display all movies with rating is in string type
+db.movie.find({rating:{$type:'string'}})
+
+-----to display all movies with rating not in string type
+db.movie.find({rating:{$not:{$type:'string'}}})
+db.movie.find({rating:{$type:'number'}})
+
+----to display all movies with rating null
+db.movie.find({rating:null})
+
+
+------to find all movies with rating key does not exists
+db.movie.find({rating:{$exists:false}})
+
+------to find all movies with rating key is null and it exists in the document
+db.movie.find({rating:{$eq:null,$exists:true}})
+
+------to display all movies with amitabh acted in it and is at 1 st index position in array
+Db.movie.find({'actor.1':'Amitabh'})
+
+
+db.movie.find({'actor':/^[Aa]mitabh/}).skip(4).limit(3)
+db.movie.find({'actor':{$regex:'^[Aa]mitabh'}})
+
+----- to find all movies starts with diigt
+db.movie.find({name:/^[0-9]/})
+
+------to find all movies with name start with digit and ends with s
+ db.movie.find({name:/^\d.*s$/})
+------to find all movies with name start with alphabate and ends with s
+ db.movie.find({name:/^[^0-9].*s$/})
+ db.movie.find({name:/^[a-zA-Z].*s$/})
+
+
+------to match entire element in a array
+ db.restuarant.find({grades:{$elemMatch:{"date" : ISODate("2014-05-20T00:00:00Z"),
+...                         "grade" : "A",
+...                         "score" : 12}}})
+
+
+---to find movies with rating > 3 and price <300
+Rating:{$gt:3}
+Price:{$lt:300}
+Db.movie.find({Rating:{$gt:3},Price:{$lt:300}})
+
+---find all restaurants with zip code =11218
+
+
+
+
+

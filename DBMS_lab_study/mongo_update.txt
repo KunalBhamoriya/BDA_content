@@ -1,0 +1,378 @@
+--------Indexes
+Indexes are used to search the data very fast, 
+by storing keys and its position in sorted order
+types of indexes:
+1. simple index----if the key is single key, then it is 
+                   simple index
+	 db.movie.createIndex({rating:1}) 
+				   
+2. compound index---> If the index is based on multiple 
+                   keys, then it is compound index
+				   
+	db.movie.createIndex({rating:1,name:-1})
+	
+3. composite index---> If the index is based on nested key,
+        then it is composite index.
+address:{zipcode:33333}    
+
+db.restaurent.createIndex({'address.zipcode':1})
+
+to create index 
+db.movie.createIndex({rating:1})
+db.movie.createIndex({rating:1,name:1})
+
+to see th list of indexes
+db.movie.getIndexes()
+
+to delete index specify the name of the index
+db.movie.dropIndex("rating_1")
+
+
+----to update data in mongodb
+updateOne : this is used to update only one matching document
+updateMany:this is used to update all matching document
+
+
+updateMany({query},{update action})
+updateOne({query},{update action})
+
+
+what update operation
+1. add new key-value pair--- $set, $min, $max
+2. delete existing key------ $unset
+3. overwrite the value of the key --- $set,$min, $max
+4. increase or decrease the value of key --- $inc, $mul
+5. to assign current date ---$currentDate
+6. to rename the existing key ---$rename
+
+If there is a array of values
+1. add a new value array  $push---> $each, $position
+2. delete a value from array  $pop,$pull
+3. overwrite the value    $,$[],$[identifier]
+
+upsert----either update or insert
+
+replaceOne ----- to replace matching document with new Document
+
+----increase the price by rs. 50 for all movies with name ends with 
+a
+
+
+db.movie.updateMany({name:/a$/},{$inc:{price:50}})
+db.movie.updateMany({name:{$regex:'a$'}},{$inc:{price:50}})
+
+
+
+----- increase price by 50 rs, rating by 1, assign todays date 
+to key lastChange. for all movies with name ends with a
+
+db.movie.updateMany({name:/a$/},
+{$inc:{price:50,rating:1},$currentDate:{lastChange:true}})
+
+
+
+
+-----to increase the  rating by 2 and decrease price by 30,for all movies 
+with name starts with K
+
+
+
+db.movie.updateMany({name:/k ^/},{$inc:{rating:2,price:-30}})
+
+-----to increase the price by 5% for all movies
+price=price*1.05
+
+db.movie.updateMany({},{$mul:{price:1.05,rating:0.5}})
+rating:{$type:'number'}
+price:{$type:'number'}
+ db.movie.updateMany({rating:{$type:'number'},price:{$type:'number'}},{$mul:{price:1.05,rating:0.5}})
+
+
+
+
+
+----and overwrite ticke_no value by 200 and increase price by 100
+for all movies with name starts with K
+
+
+db.movie.updateMany({name:/^k/i},{$set:{ticket_no:200},$inc:{price:100}})
+
+
+----to update price by 10% for all movies 
+----with name starts with p
+price=price+0.10*price
+     =price(1+0.10)
+	 =price*1.10
+db.movie.updateMany({name:/^p/},{$mul:{price:1.10}})
+
+----to update price by 10% and also store todays 
+----date to lastchange, for all movies with name starts with k
+
+
+
+db.movie.updateMany({name:/^k/i},
+{
+ $mul:{price:1.1},
+ $currentDate:{lastchange:true}
+})
+
+-------to increment rating by 2 and assign todays date to last change key for all movies with name starts with dura
+db.movie.updateMany({name:/^dura/},
+{
+$inc:{rating:2},
+$currentDate:{lastchange:true}
+})
+
+-----to assign rating to 5 of movie whose name starts with K
+Only if rating >5 then 
+
+
+rating: 7 it will get change to 5
+rating :4   it will; remain as it is 4
+db.movie.updateMany({name:/^K/I},{$min:{rating:5}})
+
+-----to update rating to 5 of movie whose name starts with p
+Only if rating <5
+rating: 7   it will remain as it is 7
+rating :4  it will get change to 5
+db.movie.updateMany({name:/^p/},{$max:{rating:5}})
+
+-----to update price 200 of movie whose rating is 3, and name starts with p
+Only if price < 200
+
+price: 250   it will remain as it is 250
+Price :100 it will get change to 200
+db.movie.updateMany({name:/^p/,rating:3},{$max:{price:200}})
+
+
+
+-----to delete the key lastmodified from all movies with name starts 
+with k
+db.movie.updateMany({name:/^k/},
+{$unset:{lastmodified:"",changedata:""}})
+
+
+------to delete the key changedate from all movies with rating is 
+either 3 or 4 or 5
+
+db.movie.updateMany({rating:{$in:[3,4,5]},{$unset:{changedate:""}})
+
+
+
+-----to rename the key lastChange from all movies with name starts 
+with k to lastupdated
+db.movie.updateMany({name:/^k/},
+{$rename:{lastChange:"lastupdated"}})
+
+------to rename key ticket_num to ticket_no for all movies with 
+price>200 and < 300
+db.movie.updateMany({price:{$gt:200,$lt:300}},
+{$rename:{ticket_num:'ticket_no'}})
+
+
+
+----to add one actor at the end of actor array
+for all movies with name starts with P
+db.movie.updateMany({name:/^p/i},
+{$push:{actor:'xxx'}})
+
+---to add many actors at the end
+db.movie.updateMany({name:/^k/i},
+{$push:{actor:{$each:['axx','byy']}}})
+
+----to add many actors at the given position
+db.movie.updateMany({name:/^k/i},
+{$push:{actor:{$each:['sss','ttt'],$position:2}} })
+
+
+----to add actor aaa, bbb at 2 nd position in actor array for all movies 
+with name ends with digit
+
+
+db.movie.updateMany({name:/\d$/},
+{$push:{actor:{$each:['aaa','bbb'],$position:2}}})
+
+
+---to delete the actor from the end of the actor array
+---for all movies with name starts with k
+
+---in $pop 1 indicates delete from the end. and -1 
+---indicates delete from the beginning
+db.movie.updateMany({name:/^k/i},{$pop:{actor:1}})
+
+----delete the value from the begining of the array
+db.movie.updateMany({name:/^k/i},{$pop:{actor:-1}})
+
+
+
+---to delete the actor  bbbb  
+---for all movies with name starts with k
+db.movie.updateMany({name:/^k/i},
+{$pull:{actor:'bbbb'}})
+
+---to delete the actor  axxx,  xxx  
+---for all movies with name starts with k
+db.movie.updateMany({name:/^k/i},
+{$pull:{actor:{$in:['xxxx','zzzz']}}})
+
+
+
+
+db.movie.updateMany({name:/^p/},{$inc:{rating:2}})
+
+-----to increase all the values of marks array in student 
+collection whose name starts with R
+
+db.students.find();
+[
+  { _id: 1, name: 'Rajan', grades: [ 99, 97, 65 ] },
+  { _id: 2, name: 'Revati', grades: [ 98, 95, 90 ] },
+  { _id: 3, name: 'Atharva', grades: [ 98, 90, 70 ] }
+]
+
+---- to increase all grades for students with name starts with R
+db.students.updateMany({name:/^R/},{$inc:{'grades.$[]':2}})
+
+db.student.updateMany({},{$inc:{'grades.$[]':2}})
+
+
+---to increase a value from grades array which is >90 by 2
+for all student whose name starts with R
+db.student.updateMany({name:/^R/,grades:{$gt:90}},
+{$inc:{'grades.$':2}})
+
+----to incease all the grades which are >=90 by 2
+---for all students with name starts with A
+ db.students.updateMany({ name: /^A/ }, 
+ { $inc: { 'grades.$[elem]': 2 } },
+ {arrayFilters:[{elem:{$gte:80}}]});
+ 
+ 
+------if following is students 3 collection
+test> db.students3.find();
+[
+  {
+    _id: 1,
+	name:'Revati',
+    grades: [
+      { grade: 90, mean: 75, std: 6 },
+      { grade: 87, mean: 100, std: 4 },
+      { grade: 91, mean: 100, std: 6 }
+    ]
+  },
+  {
+    _id: 2,
+	name:'Rashmi',
+    grades: [
+      { grade: 100, mean: 100, std: 6 },
+      { grade: 89, mean: 100, std: 3 },
+      { grade: 87, mean: 100, std: 4 }
+    ]
+  }
+]
+
+
+---- to add in grades array
+
+db.students2.updateMany({name:'Rashmi'},
+{$push:{grades:{$each:[{grade:10,mean:65,std:7},{grade:10,mean:65,std:8}],$position:1}}})
+
+
+---increase all grade of all students by 2
+ db.students2.updateMany({},
+ {$inc:{'grades.$[].grade':2}})
+ 
+---increase first grade of all students by 2 
+----if the std is 6
+ db.students2.updateMany({'grades.std':6},
+ {$inc:{'grades.$.grade':2}})
+ 
+ 
+---increase all grade of all students by 2 
+----if the std is 6
+db.student2.updateMany({},
+{$inc:{'grades.$[elem].grade':2}},
+{arrayFilters:[{'elem.std':6}]})
+
+
+
+ 
+ 
+ ----to change the adress to baner, if the current name is 
+ rajas
+ db.student.updateMany({name:'rajas'},{$set:{address:'Baner'}},
+ {upsert:true})
+
+-------to change the key lastmodified with changed
+db.movie.updateMany({name:'kahani'},
+{$rename:{'lastmodified':'changed'}})
+
+
+
+db.mystudents.insertMany( [
+   {
+      "_id" : 1,
+      "grades" : [
+         { "grade" : 80, "mean" : 75, "std" : 6 },
+         { "grade" : 85, "mean" : 90, "std" : 4 },
+         { "grade" : 85, "mean" : 85, "std" : 6 }
+      ]
+   },
+   {
+      "_id" : 2,
+      "grades" : [
+         { "grade" : 90, "mean" : 75, "std" : 6 },
+         { "grade" : 87, "mean" : 90, "std" : 3 },
+         { "grade" : 85, "mean" : 85, "std" : 4 }
+      ]
+   }
+] )
+
+-----insert document if not found, otherwise update the document
+
+db.students2.updateMany({name:'Arti'},
+{$push:{grades:{grade:14,mean:34,std:5}},$inc:{fees:3000}},
+{upsert:true})
+
+-------to replace Document
+db.students2.replaceOne({name:'Arti'},
+{name:'Ajay',grades:[{grade:23,mean:45,std:5},{grade:45,mean:67,std:8}]})
+
+
+-----update all grades for all documents for which the 
+---std is 6
+db.mystudents.updateMany({'grades.std':6},
+{$inc:{'grades.$.grade':2}})
+
+
+db.mystudents.updateMany({},
+{$inc:{'grades.$[elem].grade':2},
+{arrayFilters:[{'elem.std':{$gt:4}}]})
+
+
+------delete records
+deleteOne will delete first matching record
+deleteMany will delete all matching record
+
+db.students.deleteOne({});   ---- To delete one record
+db.students.deleteMany({})  -----To delete all records
+
+
+db.movie.deleteOne({name:/^k/})
+db.movie.deleteMany({name:/^k/})
+
+
+
+-----All Employee’s with the desg as ‘CLERK’ are now called as (AO) Administrative Officers.
+Update the Employee collection for this.
+Db.employee.updateMany({Desg:'CLERK',{$set:{Desg:'AO'}}})
+
+-----Add bonus rs 1500 if salary <50000 and > 30000
+Db.employee.updateMany({salary:{$gt:30000,$lt:50000}},{$set:{bonus:1500}}
+
+-------Decrease number of hrs by 2 for all employees who are working on project-2
+db.employee.updateMany({'project.name':'project-2'},{$inc:{'project.$.Hrs':-2}})
+
+
+
+
