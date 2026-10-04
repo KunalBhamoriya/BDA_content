@@ -1,0 +1,13 @@
+Rstudio in anaconda Ubuntu
+------------------------------
+conda activate YOUR_ENVIRONMENT_NAME
+conda install -c r r-tidyverse
+conda active
+
+
+----------
+in R script
+-----------
+
+library(tidyverse)
+library(ggplot2)
