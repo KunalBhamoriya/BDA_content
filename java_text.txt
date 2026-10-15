@@ -1,0 +1,363 @@
+package assignment3;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+
+public class SongManager{
+    List<Song> songList = new ArrayList<>();
+
+    public void addSong(Song s){
+        songList.add(s);
+        System.out.println("Song added successfully");
+    }
+
+    public void removeSongById(int serialNo){
+        if(songList.removeIf(song -> song.getSerialNo() == serialNo)){
+            System.out.println("Removed song with serial number " + serialNo);
+        }else{
+            System.out.println("No song found with serial number " + serialNo);
+        }
+    }
+    
+    public void updateSongTitle(int serialNo, String newTitle){
+        for(Song song:songList){
+            if(song.getSerialNo() == serialNo){
+                song.setTitle(newTitle);
+                System.out.println("Updated song title successfully");
+                return;
+            }
+        }
+        System.out.println("No song found with serial number " + serialNo);
+    }
+
+
+    public void updateRating(int serialNo, double newRating){
+        songList.forEach(song->{
+            if(song.getSerialNo() == serialNo){
+                song.setRating(newRating);
+                System.out.println("Updated song rating successfully");
+                return;
+            }
+        });
+    }
+
+    public void displaySongs(){
+        for(Song song:songList){
+            System.out.println(song);
+        }
+    }
+
+
+    // --------- 2 ----------
+
+    public void sortSongsByTitle(){
+        songList.sort(Comparator.comparing(song -> song.getTitle()));
+    }
+
+
+    //-------- 3 --------
+    public Song searchSongByTitle(String title){
+        for(Song song:songList){
+            if(song.getTitle() == title){
+                return song;
+            }
+        }
+        return null;
+    }
+
+
+    //--------- 4 ----------
+
+    public List<Song> getSongsByCurrentYear(){
+        int currYear = java.time.Year.now().getValue();
+        List<Song> recentSongs = new ArrayList<>();
+        songList.forEach(song->{
+            if(song.getYear() == currYear){
+                recentSongs.add(song);
+            }
+        });
+        return recentSongs;
+    }
+    
+
+    // ---------- 5 -----------
+
+    public List<Song> getSongsByArtist(String artistName){
+        List<Song> temp = new ArrayList<>();
+        for(Song s:songList){
+            if(s.getArtists().contains(artistName)){
+                temp.add(s);
+            }
+        }
+        return temp;
+    }
+
+    // ----------6- -------
+
+    public Map<String, Integer> getTitleYearList(){
+        Map<String, Integer> map = new HashMap<>();
+        songList.forEach(s->{
+            map.put(s.getTitle(), s.getYear());
+        });
+        return map;
+    }
+
+    
+
+    // ----------- 7 ----------
+    public void DisplayLowestRatingSongs(){
+        if(songList.isEmpty()){
+            System.out.println("No songs in the list");
+            return;
+        }
+        double minRating = songList.get(0).getRating();
+        for(Song s:songList){
+            if(s.getRating() < minRating){
+                minRating = s.getRating();
+            }
+        }
+        for(Song s:songList){
+            if(s.getRating() == minRating){
+                System.out.println(s);
+            }
+        }
+    }
+
+    public void DisplayHighestRatingSongs(){
+        if(songList.isEmpty()){
+            System.out.println("No songs in the list");
+            return;
+        }
+        double maxRating = songList.get(0).getRating();
+        for(Song s:songList){
+            if(s.getRating() > maxRating){
+                maxRating = s.getRating();
+            }
+        }
+        for(Song s:songList){
+            if(s.getRating() == maxRating){
+                System.out.println(s);
+            }
+        }
+    }
+    
+}
+
+
+--------------
+
+package assignment3;
+import java.util.Set;
+
+class Song{
+    private int serialNo;
+    private String title;
+    private Set<String> artists;
+    private int year;
+    private double rating;
+
+    public Song(int serialNo,String title, Set<String> artists,int year, double rating){
+        this.serialNo=serialNo;
+        this.title=title;
+        this.artists=artists;
+        this.year=year;
+        this.rating=rating;
+    }
+
+    // getters and setters
+    public int getSerialNo(){
+        return serialNo;
+    }
+
+    public void setSerialNo(int serialNo){
+        this.serialNo=serialNo;
+    }
+    
+    public String getTitle(){
+        return title;
+    }
+
+    public void setTitle(String title){
+        this.title=title;
+    }
+    
+    public Set<String> getArtists(){
+        return artists;
+    }
+    public void setArtists(Set<String> artists){
+        this.artists=artists;
+    }
+    public int getYear(){
+        return year;
+    }
+    public void setYear(int year){
+        this.year=year;
+    }
+    public double getRating(){
+        return rating;
+    }
+    public void setRating(double rating){
+        this.rating=rating;
+    }
+  
+
+    @Override
+    public String toString(){
+        return "Song [serialNo=" + serialNo + ", title=" + title + ", artists=" + artists + ", year=" + year + ", rating=" + rating + "]";
+    }
+    
+}
+
+
+----------------
+
+
+package assignment3;
+
+import java.util.*;
+
+public class Playlist {
+    public static void main(String[] args) {
+        SongManager manager = new SongManager();
+        manager.addSong(new Song(1, "Blinding Lights", new
+
+        HashSet<>(Arrays.asList("The Weeknd")), 2020, 4.8));
+
+        manager.addSong(new Song(2, "Stay", new HashSet<>(Arrays.asList("TheKid LAROI", "Justin Bieber")), 2021, 4.5));
+
+        manager.addSong(new Song(3, "Flowers", new HashSet<>(Arrays.asList("Miley Cyrus")), 2023, 4.2));
+        manager.addSong(new Song(4, "Future Track", new HashSet<>(Arrays.asList("The Weeknd", "New Gen")), 2026, 4.9));
+        manager.addSong(new Song(5, "Hass Hass", new HashSet<>(Arrays.asList("sia", "Diljit Dosanjh")), 2025, 4.5));
+
+        System.out.println("\n------------Initial song List----------");
+        manager.displaySongs();
+        System.out.println("\n---------Removing Serial no 2--------");
+        manager.removeSongById(2);
+        System.out.println("\n--------Sorting Songs by title-------- ");
+        manager.sortSongsByTitle();
+        System.out.println("\n------------ Search Songs by Title(Blinding Lights)----------");
+
+        System.out.println(manager.searchSongByTitle("Blinding Lights"));
+        System.out.println("\n----------Sort songs by current year------");
+        manager.getSongsByCurrentYear();
+        System.out.println("\n-----------Songs by The Weeknd-------");
+        manager.getSongsByArtist("The Weeknd");
+        System.out.println("\n-----------Get Songs by year------");
+        manager.getTitleYearList();
+        System.out.println("Display the highest and lowest rating songs");
+        manager.DisplayHighestRatingSongs();
+        manager.DisplayLowestRatingSongs();
+    }
+}
+
+
+
+----------------
+
+
+__CAR__
+
+package assignment2;
+
+public interface InsurancePolicy {
+    int calculatePremium();
+}
+
+
+package assignment2;
+
+public abstract class Vehicle implements InsurancePolicy {
+    protected int registration_no;
+    protected String brand;
+    protected double rent;
+
+    public void vehicle(int rno, String brand) {
+        this.registration_no = rno;
+        this.brand = brand;
+    }
+
+    public abstract double calculateRent(int hours);
+
+    public int getRegistrationNo() {
+        return registration_no;
+    }
+
+    public String getbrand() {
+        return brand;
+    }
+}
+
+
+package assignment2;
+
+public class Bus extends Vehicle {
+    private int seatCapacity;
+
+    public Bus(int registrationNo, String brand, int seatCapacity) {
+        this.registration_no = registrationNo;
+        this.brand = brand;
+        this.seatCapacity = seatCapacity;
+    }
+
+    @Override
+    public double calculateRent(int hours) {
+        if (hours <= 0)
+            return 0.0;
+        if (seatCapacity < 12) {
+            return 50 * hours;
+        } else {
+            return 70 * hours;
+        }
+    }
+
+    public int getSeatCapacity() {
+
+        return seatCapacity;
+    }
+
+    public void setSeatCapacity(int seatCapacity) {
+        this.seatCapacity = seatCapacity;
+    }
+
+    @Override
+    public int calculatePremium() {
+        if (seatCapacity > 12) {
+            return 18000;
+        } else {
+            return 10000;
+        }
+    }
+}
+
+
+package assignment2;
+
+public class PolicyApp {
+    public static void displayPolicy(Vehicle vehicle) {
+        System.out.println("Vehicle No: " + vehicle.getRegistrationNo());
+        System.out.println("Vehicle Brand: " + vehicle.getbrand());
+        System.out.println("Insurance Due: Rs. " + vehicle.calculatePremium());
+        System.out.println("---------------------------------");
+    }
+
+    public static void main(String[] args) {
+        Vehicle regularCar = new Car(234, "Maruti Swift", false);
+        Vehicle luxuryCar = new Car(9999, "Mercedes C-Class", true);
+        Vehicle smallBus = new Bus(5555, "Force Traveler", 12);
+        Vehicle largeBus = new Bus(7777, "Volvo MultiAxle", 45);
+        System.out.println("=== INSURANCE POLICY DETAILS ===");
+        displayPolicy(regularCar);
+        displayPolicy(luxuryCar);
+        displayPolicy(smallBus);
+        displayPolicy(largeBus);
+    }
+}
+
+
+
+
+
