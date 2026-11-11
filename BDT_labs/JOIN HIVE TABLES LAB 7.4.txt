@@ -1,0 +1,12 @@
+drop table constitution;
+
+create table constitution (line string) row format delimited;
+
+load data local inpath '/home/talentum/hdp/pigandhive/labs/wordcount.constitution.txt' into table constituition
+
+select explode(ngrams(sentences(line),2,15)) as x from constitution;
+
+-----------------------------------------------------------------------------------
+LAB7.4
+insert overwrite table stock_aggregates select a.symbol, year(a.trade_date), max(a.high), min(a.low), avg(a.close), sum(b.dividend) from nyse_data a left outer join dividends b on (a.symbol = b.symbol and a.trade_date = b.trade_date) group by a.symbol, year(a.trade_date);
+

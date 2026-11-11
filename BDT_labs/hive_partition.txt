@@ -1,0 +1,39 @@
+
+> create table normal_table(id string, name string, country string) row format delimited fields terminated by '\t';
+
+
+> load data local inpath '/tmp/partition_test.txt' into table normal_table;
+
+
+FOR DYANAMIC PARTITION------------------------------
+> SET hive.exec.dynamic.partition = true;          
+> SET hive.exec.dynamic.partition.mode = nonstrict;
+
+
+
+> create table dynamic_table(
+	id string,
+	name string)
+	partitioned by (country string)
+	row format delimited
+	fields terminated by '\t';
+
+> insert overwrite table dynamic_table partition(country) select id,name,country from normal_table;
+
+-------BUCKETING
+1.set hive.enforce.bucketing = true;
+
+2.create table if not exists dept_with_loc( deptno int , deptname string ,empname string, sal int, location string) row format delimited fields terminated by ',';
+
+3.load data local inpath '/tmp/dept_loc.txt' overwrite into table dept_with_loc;
+
+4. create table if not exists dept_buck(deptno int ,empname string,sal int,location string) partitioned by (deptname string) clustered by (location) into 4 buckets row format delimited fields terminated by ',' lines terminated by '\n' stored as textfile;
+
+
+
+5.insert into table dept_buck partition(deptname) select deptno,empname,sal,location,deptname from dept_with_loc;
+
+
+
+
+create table if not exists dept_buck(deptno int ,empname string,sal int,location string) partitioned by (deptname string) clustered by (location) into 4 buckets row format delimited fields terminated by ',' lines terminated by '\n' stored as textfile;

@@ -1,0 +1,20 @@
+pigdemo.txt ---> demos
+start the grunt shell --> pig
+mkdir demos 
+1. copyFromLocal /home/cloudera/hdp/pigandhive/labs/demos/pigdemo.txt demos
+2. cd demos
+3. pwd
+4. cat pigdemo.txt
+note - grunt shell gives the interface to interact with the hdfs file system
+5. employees = LOAD 'pigdemo.txt' AS (state,name); // run it from where the pigdemo.txt is situated
+6. describe employees
+7. DUMP employees // gets add in the logical plan and is there a relation 
+8. ca_only = FILTER employees BY (state=='CA');
+
+
+B = LOAD '/user/cloudera/whitehouse/visits.txt' USING PigStorage(',') AS (lname:chararray,fname:chararray,mname:chararray,id:chararray,status:chararray,state:chararray,arrival:chararray);
+
+----------------------------------------------
+lab6.1
+
+ 

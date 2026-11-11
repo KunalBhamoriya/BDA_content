@@ -1,0 +1,27 @@
+
+whitehouse.hive
+select * from wh_visits where time_of_arrival !="" order by unix_timestamp(time_of_arrival,'MM/dd/yyyy hh:mm') limit 10;
+-----------------------------------------------------------------------------------------
+select * from wh_visits where time_of_arrival !="" order by unix_timestamp(time_of_arrival,'MM/dd/yyyy hh:mm') desc limit 10;
+---------------------------------------------------------------------------------------------
+comment.hive
+select count(*) as comment_count,info_comment from wh_visits group by info_comment order by comment_count desc limit 10;
+-------------------------------------------------------------------------------------------
+select count(*) as comment_count,info_comment from wh_visits where info_comment != "" group by info_comment order by comment_count desc limit 10;
+------------------------------------------------------------------------------------------
+select count(*) as comment_count,info_comment from wh_visits where info_comment != "" group by info_comment order by comment_count limit 10;
+---------------------------------------------------------------------------------------------
+select count(*) as comment_count,info_comment from wh_visits where info_comment rlike '.*GEN.*\\s+RECEP.*' group by info_comment order by comment_count limit 10;
+-----------------------------------------------------------------------------------------
+select count(*) from wh_visits where info_comment like	"%RECEP%" and info_comment like "%GEN%" limit 30;
+-------------------------------------------------------------------------------------------
+select count(*) as comment_count from wh_visits where info_comment like "%WHO%" and info_comment like '%EOP%' oder by comment_count desc;
+-------------------------------------------------------------------------------------------
+select count(*) as comment_count,info_comment from wh_visits where info_comment like "%WHO%" and info_comment like '%EOP%' group by info_comment order by comment_count desc;
+--------------------------------------------------------------------------------------------
+select count(*) as most_visit, fname, lname from wh_visits group by fname, lname order by most_visit DESC limit 20;
+
+
+
+
+
