@@ -1,0 +1,57 @@
+cp slaries.txt /tmp
+> mysql -u root -p
+pass - cloudera
+
+> CREATE DATABASE test;
+> USE test;
+> drop table if exists salaries
+> create table salaries(
+	gender varchar(1),
+	age int,
+	salary double,
+	zipcode int);
+
+> show tables;
+> describe salaries;
+> load data local infile '/tmp/salaries.txt' into table salaries fields terminated by ',';
+> select * from salaries limit 10;
+> alter table salaries add column `id` int(10) unsigned primary KEY AUTO_INCREMENT;
+> select * from salaries limit 10;
+> exit
+-------
+
+--Import the Table inito HDFS
+>> sqoop import --connect jdbc:mysql://quickstart.cloudera:3306/test --driver com.mysql.jdbc.Driver --username root -password cloudera --table salaries
+
+>> sqoop import --connect jdbc:mysql://quickstart.cloudera:3306/test --driver com.mysql.jdbc.Driver --username root -password cloudera --table salaries --columns salary,age -m 1 --target-dir salaries2
+
+>> sqoop import --connect jdbc:mysql://quickstart.cloudera:3306/test --driver com.mysql.jdbc.Driver --username root -password cloudera --query "select * from salaries s where s.salary > 90000.00 and \$CONDITIONS" --split-by gender -m 2 --target-dir salaries3
+
+
+
+
+
+
+
+-------------- Big Data jar executable --------
+
+2) wordcount_executable - 
+	To test this project perform following steps
+	1. Start BigData Cluser by running ~/start_all.sh using source command 
+	2. Added dependency related to hadoop client side library (Already there)
+	3. Configured maven-jar-plugin for creation of executable jar (Already there)
+	4. You are suppose to create META-INF inside resources folder (Already there)
+	5. You are suppose to create a file META-INF/MANIFEST.MF (Already there)
+	6. Run Maven Build for Package Life Cycle
+	7. It should create an executable jar which can be confirmed by following command
+	8. cd ~/Test-Sandbox/MR/TestMR/wordcount_executable/target
+	9. jar -tf wordcount_executable-1.0-SNAPSHOT.jar
+	10. unzip -p wordcount_executable-1.0-SNAPSHOT.jar META-INF/MANIFEST.MF
+	11. yarn jar wordcount_executable-1.0-SNAPSHOT.jar constitution.txt wordcount_output
+	12. hdfs dfs -ls wordcount_output
+	13. hdfs dfs -cat wordcount_output/part-r-00000
+	14. hdfs dfs -rm constitution.txt
+	15. hdfs dfs -rm -R wordcount_output
+---------------------------------------------------------
+
+

@@ -1,0 +1,19 @@
+curl -i -L "http://quickstart.cloudera:50070/webhdfs/v1/user/cloudera/small_blocks.txt?op=OPEN"
+curl -i -X DELETE "http://quickstart.cloudera:50070/webhdfs/v1/user/cloudera/small_blocks.txt?op=DELETE"
+
+
+MAP REDUCE
+----------------------------------------------------------------------------------------------
+Process for building and running a Java MR application
+===============================================================================================
+1) Create a Java Project by utilizing respective IDE(Cloudera - eclipse, BigDataVm -vs code using maven)
+2) look at the source code for a package statement
+3) based on above step create a package in your java project
+4) import the source cod in above package
+5) you will get compilation errors
+6) you will analyse those errors
+7)if the errors are there because of dependency issues then resolve the dependencies
+8) Dependencies can be resolved by adding them in the classpath of the project
+9) If no compilation errors then package the application ( create a jar )
+10) Verify the jar
+11) Run the jar by using a yarn jar utility
